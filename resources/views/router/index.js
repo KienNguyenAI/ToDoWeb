@@ -1,8 +1,8 @@
 import { createRouter, createWebHistory } from "vue-router";
-import user from "./public.js";
+import publicRoutes from "./public.js";
 
 const routes = [
-    ...user,
+    ...publicRoutes,
 ]
 
 const router = createRouter({
