@@ -29,7 +29,13 @@ export default {
 
 <style>
 .todo {
+
     background-image: url('/storage/background/background.jpg');
     background-size: cover;
+}
+
+.todo .row {
+    background-color: rgb(0, 0, 0, 0.5);
+
 }
 </style>

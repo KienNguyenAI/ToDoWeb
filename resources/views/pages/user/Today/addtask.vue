@@ -1,0 +1,240 @@
+<template>
+    <div class="todayContent" @dragover.prevent @drop="handleDrop">
+        <div class="todayContent" @dragover.prevent @drop="handleDrop">
+            <Draggable v-model="tasks" item-key="id" animation="200" class="todayContent" @start="onDragStart"
+                @end="onDragEnd">
+                <div v-for="(task, index) in tasks" :key="task.id" :class="[
+                    'task',
+                    'mb-3',
+                    'd-flex',
+                    'align-items-center',
+                    'justify-content-between',
+                    task.isAdded ? 'task-added' : '',
+                    task.isRemoved ? 'task-removed' : '',
+                ]" @click="selectTask(task)">
+                    <div class="d-flex align-items-center">
+                        <a-radio v-model:checked="task.checked" @change="moveTaskToEnd(index)"></a-radio>
+                        <div class="d-flex flex-column ps-2">
+                            <span class="mylist">{{ task.list }}</span>
+                            <div class="task_text text-white">{{ task.text }}</div>
+                        </div>
+                    </div>
+                    <div class="todayOption">
+                        <i class="fa-solid fa-thumbtack me-3 icon"></i>
+                        <i class="fa-solid fa-ellipsis-vertical fa-lg icon me-3"></i>
+                        <i class="fa-solid fa-xmark icon fa-lg" @click.stop="removeTask(index)"></i>
+                    </div>
+                </div>
+            </Draggable>
+        </div>
+
+        <div v-if="selectedTask" class="taskModal">
+
+            <ModalTask @close="closeTask" />
+        </div>
+
+
+    </div>
+    <div class="todayAddTask">
+        <div class="addTask_input d-flex align-items-center ps-3 pe-3">
+            <i class="fa-solid fa-clipboard" style="color: #a2a2a2;"></i>
+            <textarea id="taskInput" class="todayAddTask_input" placeholder="Nhập tên công việc" v-model="newTask"
+                @input="adjustHeight" @keydown.enter.prevent="addTask"></textarea>
+        </div>
+    </div>
+</template>
+
+
+<script setup>
+import { ref } from 'vue';
+import ModalTask from '../../../component/ModalTask.vue';
+import { VueDraggableNext } from "vue-draggable-next";
+
+const Draggable = VueDraggableNext;
+const tasks = ref([]);
+const newTask = ref('');
+const selectedTask = ref(null);
+
+let draggedTaskIndex = ref(null);
+
+const adjustHeight = (event) => {
+    const textarea = event.target;
+    textarea.style.height = '44px';
+    textarea.style.height = `${textarea.scrollHeight}px`;
+};
+
+const addTask = () => {
+    if (newTask.value.trim()) {
+        const newTaskObject = {
+            text: newTask.value.trim(),
+            checked: false,
+            list: 'My lists > Personal',
+            isAdded: true,
+        };
+        tasks.value.unshift(newTaskObject);
+
+        setTimeout(() => {
+            newTaskObject.isAdded = false;
+        }, 500);
+
+        newTask.value = '';
+    }
+};
+
+const removeTask = (index) => {
+    const taskToRemove = tasks.value[index];
+    if (taskToRemove) {
+        taskToRemove.isRemoved = true;
+
+        setTimeout(() => {
+            tasks.value.splice(index, 1);
+        }, 300);
+    }
+};
+const moveTaskToEnd = (index) => {
+    const task = tasks.value[index];
+    if (task) {
+        tasks.value.splice(index, 1);
+
+
+        tasks.value.push(task);
+    }
+};
+// slectedTask
+const selectTask = (task) => {
+    selectedTask.value = task;
+};
+
+const closeTask = () => {
+    selectedTask.value = null;
+};
+
+// Drag and Drop
+const onDragStart = (evt) => {
+    evt.item.classList.add('task-dragging');
+};
+
+const onDragEnd = (evt) => {
+    evt.item.classList.remove('task-dragging');
+};
+
+</script>
+
+
+<style>
+.addTask_input {
+    background-color: rgb(0, 0, 0, 0.5);
+    border-radius: .5rem;
+}
+
+.addTask_input:hover {
+    border: 1px solid #0083ff;
+}
+
+.todayContent {
+    height: 60vh;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+.todayContent::-webkit-scrollbar {
+    width: 3px;
+}
+
+.todayContent::-webkit-scrollbar-thumb {
+    background: rgb(255, 255, 255, 0.3);
+    border-radius: 3px;
+}
+
+
+
+.todayContent::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 3px;
+}
+
+.todayContent .task {
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 0.5rem;
+    padding: 0.7rem;
+}
+
+.todayContent .task:hover {
+    background-color: #424648;
+}
+
+.todayContent .task .mylist {
+    color: #818181;
+    font-size: 0.75rem;
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+}
+
+.todayContent .task .mylist:hover {
+    text-decoration: underline;
+}
+
+.todayContent .task .icon {
+    cursor: pointer;
+    color: #818181;
+}
+
+.todayAddTask_input {
+    background-color: transparent;
+    width: 100%;
+    height: 2.75rem;
+    border: none;
+    resize: none;
+    color: #e4e4e4;
+    padding: 0.7rem;
+    box-sizing: border-box;
+    overflow: hidden;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    min-height: 2.75rem;
+    transition: height 0.1s ease-in-out;
+}
+
+.todayAddTask_input:focus {
+    outline: none;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+        max-height: 0;
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+        max-height: 100px;
+    }
+}
+
+.task-added {
+    animation: slideDown 0.5s ease-out;
+    overflow: hidden;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+        max-height: 100px;
+    }
+
+    to {
+        opacity: 0;
+        transform: translateY(-100px);
+        max-height: 10px;
+    }
+}
+
+.task-removed {
+    animation: slideUp 0.3s ease-out;
+    overflow: hidden;
+}
+</style>

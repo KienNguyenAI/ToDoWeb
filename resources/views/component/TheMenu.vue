@@ -130,7 +130,7 @@ const onImageError = () => {
 
 <style scoped>
 .custom-list {
-    background-color: rgba(0, 0, 0, 0.8);
+    background-color: rgba(0, 0, 0, 0.6);
     color: white;
     display: flex;
     flex-direction: column;
