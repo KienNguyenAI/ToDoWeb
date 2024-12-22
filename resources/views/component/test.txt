@@ -1,0 +1,219 @@
+<template>
+    <div class="d-flex flex-column vh-100 ">
+        <a-list size="large" class="menu custom-list d-flex flex-column">
+            <template #header>
+                <div class="header-container d-flex align-items-center pt-3" style="padding-left: 1.5rem;">
+                    <div class="avatar">
+                        <template v-if="avatarSrc">
+                            <img :src="avatarSrc" alt="Avatar" class="rounded-circle"
+                                style="width: 2.5rem; height: 2.5rem;" @error="onImageError" />
+                        </template>
+                        <template v-else>
+                            <div class="default-icon">
+
+                            </div>
+                        </template>
+                    </div>
+                    <div class="">
+                        <div class="username  fs-5 ps-3" style="font-weight: 500;">Kiên</div>
+                    </div>
+                </div>
+            </template>
+            <!-- Nội dung menu-container -->
+            <div class="menu">
+
+                <router-link to="/myday" class="text">
+                    <div class="content" :class="{ active: selectedContent === 'today' }"
+                        @click="selectContent('today')">
+                        <i class="fa-solid fa-chart-pie me-2"></i>
+                        Hôm nay
+                    </div>
+                </router-link>
+                <router-link to="/nextweek" class="text">
+                    <div class="content" :class="{ active: selectedContent === 'nextWeek' }"
+                        @click="selectContent('nextWeek')">
+                        <i class="fa-solid fa-calendar-days me-2"></i>
+                        Tuần tới
+                    </div>
+                </router-link>
+                <router-link to="/alltask" class="text">
+                    <div class="content" :class="{ active: selectedContent === 'allTasks' }"
+                        @click="selectContent('allTasks')">
+                        <i class="fa-brands fa-slack me-2"></i>
+                        Tất cả công việc
+                    </div>
+                </router-link>
+            </div>
+            <!-- Footer -->
+            <template #footer>
+                <div class="p-2  footer">Footer</div>
+            </template>
+        </a-list>
+    </div>
+</template>
+
+
+
+<script setup>
+import { ref } from 'vue';
+
+const selectedContent = ref('');
+
+const selectContent = (content) => {
+    selectedContent.value = content;
+};
+</script>
+
+
+<style scoped>
+.custom-list {
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
+    overflow: hidden;
+
+}
+
+.custom-menu {
+    background-color: transparent !important;
+    display: flex;
+    flex-direction: column;
+    /* Màu nền đen */
+}
+
+.content {
+    padding: .5rem 2rem;
+    color: #b7b7b7;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.content .text {
+    color: #b7b7b7;
+}
+
+.content:hover {
+    background-color: #424242;
+}
+
+.content.active .text,
+.content.active {
+    color: #0083ff;
+}
+
+/* menu item */
+.menu-item {
+    color: #b7b7b7;
+    font-size: 1rem;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+
+
+.menu-item .content {
+    display: flex;
+    align-items: center;
+    padding: 0.6rem 1rem;
+    color: #b7b7b7;
+}
+
+
+
+
+.menu-item.ant-menu-item-selected {
+    background-color: #0083ff !important;
+    color: #0083ff;
+}
+
+.menu-item.ant-menu-item-selected .text {
+    color: #0083ff !important;
+}
+
+
+.menu-item:hover {
+    background-color: #424242;
+    color: #ffffff;
+}
+
+.menu-item .text {
+    color: #b7b7b7;
+    text-decoration: none;
+}
+
+.menu-item .content:hover,
+.menu-item .content .text:hover {
+    color: #0083ff;
+}
+
+/*  */
+.footer {
+    flex-shrink: 0;
+    background: #001427;
+    padding: 1rem;
+    text-align: center;
+
+}
+
+.submenu-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+}
+
+
+.submenu-title .icon {
+    color: white;
+    cursor: pointer;
+}
+
+.submenu-title .icon:hover {
+    color: #0083ff;
+}
+
+.default-icon {
+    font-size: 1.25rem;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    border: 2px solid white;
+    cursor: pointer;
+}
+
+.default-icon:hover {
+    color: #0083ff;
+    border: 2px solid #0083ff;
+}
+
+/* .custom-menu .item {
+    margin: 4px;
+    padding-left: 24px;
+    padding-right: 24px;
+    font-size: 1rem;
+    color: #b7b7b7;
+}
+
+.custom-menu .item .content {
+    padding-top: .6rem;
+    padding-bottom: .6rem;
+}
+
+.custom-menu .item .content .text {
+    color: #b7b7b7
+}
+
+.custom-menu .item.selected .content .text {
+    color: #0083ff !important;
+}
+
+.custom-menu .item:hover {
+    background-color: #424242;
+} */
+</style>

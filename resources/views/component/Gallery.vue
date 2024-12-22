@@ -1,6 +1,7 @@
 <template>
     <div class="gallery d-flex">
-        <div v-for="(gallery, index) in galleries" :key="index" class="galleryCard d-flex flex-column me-3">
+        <div v-for="(gallery, index) in galleries" :key="index" :style="{ animationDelay: `${index * 0.05}s` }"
+            class="galleryCard d-flex flex-column me-3">
             <div class="galleryCard_header text-white fw-bold d-flex align-content-center">
                 {{ gallery.header }}
                 <span class="text-secondary ms-2">{{ gallery.weekDay }}</span>
@@ -25,7 +26,6 @@
                     </div>
                 </Draggable>
             </div>
-
             <div class="galleryCard_footer mt-3 d-flex flex-column">
                 <transition name="fadeInUp">
                     <div v-if="gallery.isSlideUpActive" class="allTask_sortTimeAddTaskItems ps-3 pe-3 pt-2">
@@ -53,28 +53,30 @@
                     <i class="fa-solid fa-arrow-up icon"></i>
                 </div>
             </div>
+
         </div>
-        <a-modal v-model:open="open" :closable="false" :footer="null">
-            <a-card title="List">
-                <div class="header text-white">
-                    <div class="text fw-bold">My lists</div>
-                </div>
-                <div class="content text-white">
-                    <div class="listItems">
-                        <div class="item d-flex flex-column justify-content-center">
-                            <div class="line"></div>
-                            <button class="w-100  btn">
-                                <div class="d-flex justify-content-between align-items-center fs-6 ps-3 pe-3">
-                                    <div class="text">Personal</div>
-                                    <i class="fa-solid fa-circle-check fa-lg icon" style="color: #23ce88;"></i>
-                                </div>
-                            </button>
-                        </div>
+
+    </div>
+    <a-modal v-model:open="open" :closable="false" :footer="null">
+        <a-card title="List">
+            <div class="header text-white">
+                <div class="text fw-bold">My lists</div>
+            </div>
+            <div class="content text-white">
+                <div class="listItems">
+                    <div class="item d-flex flex-column justify-content-center">
+                        <div class="line"></div>
+                        <button class="w-100  btn">
+                            <div class="d-flex justify-content-between align-items-center fs-6 ps-3 pe-3">
+                                <div class="text">Personal</div>
+                                <i class="fa-solid fa-circle-check fa-lg icon" style="color: #23ce88;"></i>
+                            </div>
+                        </button>
                     </div>
                 </div>
-            </a-card>
-        </a-modal>
-    </div>
+            </div>
+        </a-card>
+    </a-modal>
 </template>
 
 <script setup>
@@ -167,11 +169,13 @@ onUnmounted(() => {
     padding: .75rem;
     margin-right: 10px;
     flex-shrink: 0;
+    animation: fadeInUp1 0.5s ease-out forwards;
 }
 
 
 .gallery::-webkit-scrollbar {
     width: 3px;
+    height: 5px;
 }
 
 .gallery::-webkit-scrollbar-thumb {
@@ -284,6 +288,19 @@ onUnmounted(() => {
 
 .ant-card-body button:hover {
     background-color: #252525;
+}
+
+@keyframes fadeInUp1 {
+    from {
+        transform: translate3d(0, 100%, 0);
+        visibility: visible;
+        opacity: 0;
+    }
+
+    to {
+        transform: translate3d(0, 0, 0);
+        opacity: 1;
+    }
 }
 
 @keyframes fadeInUp {

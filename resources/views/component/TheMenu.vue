@@ -10,73 +10,86 @@
                         </template>
                         <template v-else>
                             <div class="default-icon">
-                                <SettingOutlined class="icon" />
-                            </div>
 
+                            </div>
                         </template>
                     </div>
                     <div class="">
                         <div class="username  fs-5 ps-3" style="font-weight: 500;">Kiên</div>
-
                     </div>
                 </div>
             </template>
             <!-- Nội dung menu-container -->
-            <a-menu v-model:openKeys="state.openKeys" v-model:selectedKeys="state.selectedKeys" mode="inline"
-                :inline-collapsed="state.collapsed" class="custom-menu">
-                <a-menu-item key="1" class="menu-item">
-                    <div class="content">
-                        <PieChartOutlined class="me-2" />
-                        <router-link to="/myday" class="text">My Day</router-link>
+            <div class="menu">
+                <router-link to="/myday" class="text">
+                    <div class="content" :class="{ active: selectedContent === 'today' }"
+                        @click="selectContent('today')">
+                        <i class="fa-solid fa-chart-pie me-2"></i>
+                        Hôm nay
                     </div>
-                </a-menu-item>
-                <a-menu-item key="2" class="menu-item">
-                    <div class="content">
-                        <DesktopOutlined class="me-2" />
-                        <router-link to="/nextweek" class="text">Next 7 days</router-link>
+                </router-link>
+                <router-link to="/nextweek" class="text">
+                    <div class="content" :class="{ active: selectedContent === 'nextWeek' }"
+                        @click="selectContent('nextWeek')">
+                        <i class="fa-solid fa-calendar-days me-2"></i>
+                        Tuần tới
                     </div>
-                </a-menu-item>
-                <a-menu-item key="3" class="menu-item">
-                    <div class="content">
-                        <InboxOutlined class="me-2" />
-                        <router-link to="/alltask" class="text">All my tasks</router-link>
+                </router-link>
+                <router-link to="/alltask" class="text">
+                    <div class="content" :class="{ active: selectedContent === 'allTasks' }"
+                        @click="selectContent('allTasks')">
+                        <i class="fa-brands fa-slack me-2"></i>
+                        Tất cả công việc
                     </div>
-                </a-menu-item>
-                <a-menu-item key="4" class="menu-item">
-                    <div class="content">
-                        <InboxOutlined class="me-2" />
-                        <router-link to="/calendar" class="text">Calendar</router-link>
+                </router-link>
+                <router-link to="/calendar" class="text">
+                    <div class="content" :class="{ active: selectedContent === 'calendar' }"
+                        @click="selectContent('calendar')">
+                        <i class="fa-brands fa-slack me-2"></i>
+                        Calendar
                     </div>
-                </a-menu-item>
-
-                <a-sub-menu key="5" :expand-icon="() => null" class="item">
-                    <template #title>
-
-
-                        <div class="submenu-title">
-                            <h3>My lists</h3>
-                            <PlusOutlined @click.stop="addSubItem('5')" class="icon" />
+                </router-link>
+                <div>
+                    <div class="content d-flex align-items-center justify-content-between" @click="toggleSubItems">
+                        <div class="title">
+                            {{ listTitle }}
                         </div>
-                    </template>
-                    <router-link to="/task/lists" style="color: #b7b7b7;">
-                        <a-menu-item v-for="(item, index) in state.myLists" :key="`5-${index}`" class="menu-item">
-                            {{ item }}
-                        </a-menu-item>
-                    </router-link>
-
-                </a-sub-menu>
-                <a-sub-menu key="6" :expand-icon="() => null" class="item">
-                    <template #title>
-                        <div class="submenu-title">
-                            <h3>Tags</h3>
-                            <PlusOutlined @click.stop="addSubItem('6')" class="icon" />
+                        <i class="fa-solid fa-plus icon"></i>
+                    </div>
+                    <div class="subItems" ref="subItemsRef"
+                        :style="{ height: isSubItemsVisible ? subItemsHeight : '0px', overflow: 'hidden', transition: 'height 0.3s ease' }">
+                        <div class="item" v-for="(item, index) in subItems" :key="index">
+                            <router-link :to="item.link" class="text">
+                                <div class="content" :class="{ active: selectedContent === item.id }"
+                                    @click="selectContent(item.id)">
+                                    {{ item.text }}
+                                </div>
+                            </router-link>
                         </div>
-                    </template>
-                    <a-menu-item v-for="(item, index) in state.tags" :key="`6-${index}`">
-                        {{ item }}
-                    </a-menu-item>
-                </a-sub-menu>
-            </a-menu>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="content d-flex align-items-center justify-content-between" @click="toggleTagSubItems">
+                        <div class="title">
+                            {{ tagTitle }}
+                        </div>
+                        <i class="fa-solid fa-plus icon"></i>
+
+                    </div>
+                    <div class="subItems" ref="tagSubItemsRef"
+                        :style="{ height: isTagSubItemsVisible ? tagSubItemsHeight : '0px', overflow: 'hidden', transition: 'height 0.3s ease' }">
+                        <div class="item" v-for="(item, index) in tagSubItems" :key="index">
+                            <router-link :to="item.link" class="text">
+                                <div class="content" :class="{ active: selectedContent === item.id }"
+                                    @click="selectContent(item.id)">
+                                    {{ item.text }}
+                                </div>
+                            </router-link>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <!-- Footer -->
             <template #footer>
                 <div class="p-2  footer">Footer</div>
@@ -88,47 +101,68 @@
 
 
 <script setup>
-import { reactive, watch, h } from 'vue';
-import {
-    PieChartOutlined,
-    DesktopOutlined,
-    InboxOutlined,
-    PlusOutlined,
-    SettingOutlined
-} from '@ant-design/icons-vue';
+import { ref, nextTick } from 'vue';
 
-const state = reactive({
-    collapsed: false,
-    selectedKeys: ['1'],
-    openKeys: ['sub1'],
-    preOpenKeys: ['sub1'],
-    myLists: ['Work', 'Personal', 'Projects'],
-    tags: ['Urgent', 'Important', 'Optional'],
-    avatarSrc: '../../../public/storage/avatar/1732920513-default.webp',
-    hasAvatar: true,
-});
+const selectedContent = ref('');
+const isSubItemsVisible = ref(false);
+const subItemsHeight = ref('0px');
+const subItemsRef = ref(null);
+const isTagSubItemsVisible = ref(false);
+const tagSubItemsHeight = ref('0px');
+const tagSubItemsRef = ref(null);
 
-watch(
-    () => state.openKeys,
-    (_val, oldVal) => {
-        state.preOpenKeys = oldVal;
-    },
-);
+const listTitle = ref('Danh sách của tôi');
+const subItems = ref([
+    { id: 'abc', text: 'Cá nhân', link: '/task/lists' },
+    { id: 'b', text: 'Công việc', link: '/alltask' },
+]);
 
+const tagTitle = ref('Tag');
+const tagSubItems = ref([
+    { id: 'personal', text: 'Cá nhân', link: '/personal' },
+]);
 
-const addSubItem = (key) => {
-    if (key === '5') {
-        state.myLists.push(`New Item ${state.myLists.length + 1}`);
-    } else if (key === '6') {
-        state.tags.push(`New Tag ${state.tags.length + 1}`);
+const selectContent = (content) => {
+    selectedContent.value = content;
+};
+
+// Toggle cho "Danh sách của tôi"
+const toggleSubItems = async () => {
+    isSubItemsVisible.value = !isSubItemsVisible.value;
+    if (isSubItemsVisible.value) {
+        await nextTick();
+        subItemsHeight.value = `${subItemsRef.value.scrollHeight}px`;
+    } else {
+        subItemsHeight.value = '0px';
     }
 };
-const onImageError = () => {
-    state.avatarSrc = null;
+
+// Toggle cho "Tag"
+const toggleTagSubItems = async () => {
+    isTagSubItemsVisible.value = !isTagSubItemsVisible.value;
+    if (isTagSubItemsVisible.value) {
+        await nextTick();
+        tagSubItemsHeight.value = `${tagSubItemsRef.value.scrollHeight}px`;
+    } else {
+        tagSubItemsHeight.value = '0px';
+    }
 };
 </script>
 
+
 <style scoped>
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translate3d(0, 100%, 0);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
 .custom-list {
     background-color: rgba(0, 0, 0, 0.6);
     color: white;
@@ -147,45 +181,37 @@ const onImageError = () => {
     /* Màu nền đen */
 }
 
-/* menu item */
-.menu-item {
+.subItems {
+    transition: height 0.3s ease;
+}
+
+.content {
+    padding: .5rem 2rem;
     color: #b7b7b7;
     font-size: 1rem;
-    transition: background-color 0.3s, color 0.3s;
+    cursor: pointer;
 }
 
-.menu-item .content {
-    display: flex;
-    align-items: center;
-    padding: 0.6rem 1rem;
+.content .text {
     color: #b7b7b7;
 }
 
-.menu-item.ant-menu-item-selected {
-    background-color: #0083ff !important;
-    color: white !important;
-}
-
-.menu-item.ant-menu-item-selected .me-2,
-.menu-item.ant-menu-item-selected .text {
-    color: #0083ff !important;
-}
-
-
-.menu-item:hover {
+.content:hover {
     background-color: #424242;
-    color: #ffffff;
 }
 
-.menu-item .text {
-    color: #b7b7b7;
-    text-decoration: none;
-}
-
-.menu-item .content:hover,
-.menu-item .text:hover {
+.content.active .text,
+.content.active {
     color: #0083ff;
 }
+
+.content .title {
+    color: white;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+
 
 /*  */
 .footer {
@@ -196,22 +222,6 @@ const onImageError = () => {
 
 }
 
-.submenu-title {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    color: white;
-}
-
-
-.submenu-title .icon {
-    color: white;
-    cursor: pointer;
-}
-
-.submenu-title .icon:hover {
-    color: #0083ff;
-}
 
 .default-icon {
     font-size: 1.25rem;
@@ -230,29 +240,4 @@ const onImageError = () => {
     color: #0083ff;
     border: 2px solid #0083ff;
 }
-
-/* .custom-menu .item {
-    margin: 4px;
-    padding-left: 24px;
-    padding-right: 24px;
-    font-size: 1rem;
-    color: #b7b7b7;
-}
-
-.custom-menu .item .content {
-    padding-top: .6rem;
-    padding-bottom: .6rem;
-}
-
-.custom-menu .item .content .text {
-    color: #b7b7b7
-}
-
-.custom-menu .item.selected .content .text {
-    color: #0083ff !important;
-}
-
-.custom-menu .item:hover {
-    background-color: #424242;
-} */
 </style>

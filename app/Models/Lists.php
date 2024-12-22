@@ -1,15 +1,18 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class TaskList extends Model
+class Lists extends Model
 {
     use HasFactory;
 
-    public function tasks()
+    protected $fillable = ['userId', 'name'];
+
+    public function user()
     {
-        return $this->hasMany(Task::class, 'listId');
+        return $this->belongsTo(User::class, 'userId');
     }
 }

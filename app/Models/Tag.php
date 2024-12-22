@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -8,8 +9,10 @@ class Tag extends Model
 {
     use HasFactory;
 
-    public function tasks()
+    protected $fillable = ['userId', 'name', 'color'];
+
+    public function user()
     {
-        return $this->hasMany(Task::class, 'tagId');
+        return $this->belongsTo(User::class, 'userId');
     }
 }
