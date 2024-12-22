@@ -14,13 +14,12 @@ class CreateTasksTable extends Migration
             $table->text('description')->nullable();
             $table->json('subtask')->nullable();
             $table->timestamps(); // Tự động tạo createdAt và updatedAt
-            $table->boolean('archived')->default(false); // Có hoặc không
             $table->unsignedBigInteger('userId');
             $table->unsignedBigInteger('listId')->nullable();
 
             // Khóa ngoại
-            // $table->foreign('userId')->references('id')->on('users')->onDelete('cascade');
-            // $table->foreign('listId')->references('id')->on('lists')->onDelete('set null');
+            $table->foreign('userId')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('listId')->references('id')->on('lists')->onDelete('set null');
         });
     }
 

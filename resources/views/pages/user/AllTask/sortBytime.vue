@@ -73,8 +73,7 @@
                     <div class="d-flex align-items-center allTask_addTaskItems ps-2 pe-2 ">
                         <textarea id="taskInput" class="todayAddTask_input" placeholder="Nhập tên công việc"
                             v-model="newTask" @input="adjustHeight" @focus="isSlideUpActive = true"
-                            @keydown.enter.prevent="addTask">
-            </textarea>
+                            @keydown.enter.prevent="addTask"></textarea>
                         <i class="fa-solid fa-arrow-up icon"></i>
                     </div>
                 </div>

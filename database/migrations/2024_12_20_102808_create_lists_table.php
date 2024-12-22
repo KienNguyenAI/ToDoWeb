@@ -1,4 +1,5 @@
 <?php
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -14,7 +15,7 @@ class CreateListsTable extends Migration
             $table->timestamps();
 
             // // Khóa ngoại
-            // $table->foreign('userId')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('userId')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

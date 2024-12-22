@@ -16,12 +16,16 @@ class CreateTagsTable extends Migration
             $table->timestamps();
 
             // Khóa ngoại
-            // $table->foreign('userId')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('userId')->references('id')->on('users')->onDelete('cascade');
         });
     }
 
     public function down()
     {
-        Schema::dropIfExists('tags');
+        Schema::table('tags', function (Blueprint $table) {
+            // Xóa khóa ngoại và cột listId
+            $table->dropForeign(['listId']);
+            $table->dropColumn('listId');
+        });
     }
 }
